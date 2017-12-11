@@ -16,9 +16,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-//#include "Arduino.h"
-//#include "Reset.h"
-#include "sam3xa.h"
+#include "Arduino.h"
+#include "Reset.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,21 +40,11 @@ void MemManage_Handler (void) __attribute__ ((weak, alias("__halt")));
 void BusFault_Handler  (void) __attribute__ ((weak, alias("__halt")));
 void UsageFault_Handler(void) __attribute__ ((weak, alias("__halt")));
 void DebugMon_Handler  (void) __attribute__ ((weak, alias("__halt")));
-
-void SVC_Handler(void)
-{
-    //svcHook();        // FIXME: do the right thing!
-}
-
-void PendSV_Handler(void)
-{
-    //pendSVHook();        // FIXME: do the right thing!
-}
+void SVC_Handler       (void) { svcHook(); }
+void PendSV_Handler    (void) {	pendSVHook(); }
 
 void SysTick_Handler(void)
 {
-    /* FIXME: do the right thing!
- 
 	if (sysTickHook())
 		return;
 
@@ -63,7 +52,6 @@ void SysTick_Handler(void)
 
 	// Increment tick count each ms
 	TimeTick_Increment();
-    */
 }
 
 /* Peripherals handlers */

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sam3x8e.h>
+#include <sam.h>
 
 ////
 //
