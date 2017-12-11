@@ -8,7 +8,8 @@ static inline void delayMicroseconds(uint32_t usec)
     if (usec == 0)
         return;
 
-    uint32_t n = usec * (F_CPU / 3000000);
+    //uint32_t n = usec * (F_CPU / 3000000L);
+    uint32_t n = usec; // FIXME: something is clearly wrong here!
 
     asm volatile(
         "L_%=_delayMicroseconds:"       "\n\t"
@@ -20,7 +21,7 @@ static inline void delayMicroseconds(uint32_t usec)
 
 static void delay(uint32_t millis)
 {
-    while (millis-- > 0)
+    for (uint32_t i = 0; i < millis; ++i)
         delayMicroseconds(1000);
 }
 
