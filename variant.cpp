@@ -67,6 +67,22 @@ void serialEventRun(void)
 
 extern "C" {
 
+uint32_t pmc_enable_periph_clk(uint32_t ul_id)
+{
+    if (ul_id < 32) {
+        if ((PMC->PMC_PCSR0 & (1u << ul_id)) != (1u << ul_id)) {
+            PMC->PMC_PCER0 = 1 << ul_id;
+        }
+    } else {
+        ul_id -= 32;
+        if ((PMC->PMC_PCSR1 & (1u << ul_id)) != (1u << ul_id)) {
+            PMC->PMC_PCER1 = 1 << ul_id;
+        }
+    }
+
+    return 0;
+}
+
 void __libc_init_array(void);
 
 void init( void )
