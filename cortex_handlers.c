@@ -16,12 +16,15 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "Arduino.h"
 #include "Reset.h"
+#include <sam3.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+extern void TimeTick_Increment( void );
+
 
 static void __halt() {
 	// Halts
