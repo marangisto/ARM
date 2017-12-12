@@ -1,12 +1,14 @@
-//#include "init.h"
+extern "C"
+{
+    extern void init();
+}
 
 extern void setup();
 extern void loop();
 
 int main()
 {
-    ///init_controller();
-
+    init();
     setup();
     for (;;)
         loop();
