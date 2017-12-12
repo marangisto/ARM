@@ -383,10 +383,6 @@ void init( void )
   // Initialize C library
   __libc_init_array();
 
-  // Disable pull-up on every pin
-  for (unsigned i = 0; i < PINS_COUNT; i++)
-	  digitalWrite(i, LOW);
-
   // Enable parallel access on PIO output data registers
   PIOA->PIO_OWER = 0xFFFFFFFF;
   PIOB->PIO_OWER = 0xFFFFFFFF;
@@ -399,7 +395,6 @@ void init( void )
     g_APinDescription[PINS_UART].ulPinType,
     g_APinDescription[PINS_UART].ulPin,
     g_APinDescription[PINS_UART].ulPinConfiguration);
-  digitalWrite(0, HIGH); // Enable pullup for RX0
   PIO_Configure(
     g_APinDescription[PINS_USART0].pPort,
     g_APinDescription[PINS_USART0].ulPinType,
@@ -442,9 +437,6 @@ void init( void )
   adc_configure_trigger(ADC, ADC_TRIG_SW, 0); // Disable hardware trigger.
   adc_disable_interrupt(ADC, 0xFFFFFFFF); // Disable all ADC interrupts.
   adc_disable_all_channel(ADC);
-
-  // Initialize analogOutput module
-  analogOutputInit();
 }
 
 #ifdef __cplusplus
