@@ -2,6 +2,11 @@
 
 #include <sam.h>
 
+extern "C" {
+uint32_t pmc_enable_periph_clk(uint32_t ul_id);
+uint32_t pmc_disable_periph_clk(uint32_t ul_id);
+}
+
 ////
 //
 //  Port manipulation for SAM3X procesors.
@@ -18,6 +23,7 @@ enum port_enum_t { P_, PA, PB, PC, PD, PE, PF };
 
 template<port_enum_t PORT> struct port_t
 {
+    static const uint32_t peripheral_id;            // peripheral identifier
     static inline volatile word_t& puer();          // pull-up enable
     static inline volatile word_t& pder();          // pull-up disable
     static inline const volatile word_t& pusr();    // pull-up status
@@ -39,6 +45,7 @@ template<port_enum_t PORT> struct port_t
 template<> struct port_t<PA>
 {
     static const port_enum_t port = PA;
+    static const uint32_t peripheral_id = ID_PIOA;
 
     static inline volatile word_t& puer()       { return REG_PIOA_PUER; }
     static inline volatile word_t& pudr()       { return REG_PIOA_PUDR; }
@@ -61,6 +68,7 @@ template<> struct port_t<PA>
 template<> struct port_t<PB>
 {
     static const port_enum_t port = PB;
+    static const uint32_t peripheral_id = ID_PIOB;
 
     static inline volatile word_t& puer()       { return REG_PIOB_PUER; }
     static inline volatile word_t& pudr()       { return REG_PIOB_PUDR; }
@@ -83,6 +91,7 @@ template<> struct port_t<PB>
 template<> struct port_t<PC>
 {
     static const port_enum_t port = PC;
+    static const uint32_t peripheral_id = ID_PIOC;
 
     static inline volatile word_t& puer()       { return REG_PIOC_PUER; }
     static inline volatile word_t& pudr()       { return REG_PIOC_PUDR; }
@@ -105,6 +114,7 @@ template<> struct port_t<PC>
 template<> struct port_t<PD>
 {
     static const port_enum_t port = PD;
+    static const uint32_t peripheral_id = ID_PIOD;
 
     static inline volatile word_t& puer()       { return REG_PIOD_PUER; }
     static inline volatile word_t& pudr()       { return REG_PIOD_PUDR; }
@@ -139,12 +149,13 @@ template<class PIN> struct input_t
     template<pullup_t PULLUP = no_pull>
     static inline void setup()
     {
-        static_assert(PULLUP != pull_down, "pulldown not supported on this architecture");
+        pmc_enable_periph_clk(PIN::port::peripheral_id);
         PIN::port::odr() = PIN::bitmask;
+        static_assert(PULLUP != pull_down, "pulldown not supported on this architecture");
         (PULLUP == pull_up ? PIN::port::puer() : PIN::port::pudr()) = PIN::bitmask;
     }
 
-    static inline bool get() { return (PIN::port::pdir() & PIN::bitmask) != 0; }
+    static inline bool get() { return (PIN::port::pdsr() & PIN::bitmask) != 0; }
 };
 
 enum drain_t { common_drain, open_drain };
