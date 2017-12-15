@@ -176,3 +176,24 @@ template<class PIN> struct output_t
     static inline void toggle() { get() ? clear() : set(); }
 };
 
+template<class PIN> struct inout_t
+{
+    template<pullup_t PULLUP = no_pull, drain_t DRAIN = common_drain>
+    static inline void setup()
+    {
+        pmc_enable_periph_clk(PIN::port::peripheral_id);
+        PIN::port::odr() = PIN::bitmask;    // starting out as input for safety
+        static_assert(PULLUP != pull_down, "pulldown not supported on this architecture");
+        (PULLUP == pull_up ? PIN::port::puer() : PIN::port::pudr()) = PIN::bitmask;
+        (DRAIN == open_drain ? PIN::port::mder() : PIN::port::mddr()) = PIN::bitmask;
+    }
+
+    static inline void enable_output() { PIN::port::oer() = PIN::bitmask; }
+    static inline void disable_output() { PIN::port::odr() = PIN::bitmask; }
+    static inline bool get() { return (PIN::port::pdsr() & PIN::bitmask) != 0; }
+    static inline void set(bool x) { x ? set() : clear(); }
+    static inline void set() { PIN::port::sodr() = PIN::bitmask; }
+    static inline void clear() { PIN::port::codr() = PIN::bitmask; }
+    static inline void toggle() { get() ? clear() : set(); }
+};
+
